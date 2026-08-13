@@ -2,56 +2,104 @@ import React, { useState } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import pets from '../data/pets';
 
-// HomeScreen shows the full list of adoptable pets and lets the user
-// filter by species. This screen holds Hook 1: selectedSpecies.
+const filterOptions = ['All', 'Dog', 'Cat', 'Other'];
+
+const chipPalette = ['#D9F1E5', '#E6F0FF', '#EDE1FF'];
 
 export default function HomeScreen({ navigation }) {
-  // Hook 1: tracks which species filter is active ("All", "Dog", "Cat", "Other")
   const [selectedSpecies, setSelectedSpecies] = useState('All');
 
-  // Derive the filtered list from state — no need for a second array in state,
-  // we just compute this on every render based on selectedSpecies.
   const filteredPets =
     selectedSpecies === 'All'
       ? pets
       : pets.filter((pet) => pet.species === selectedSpecies);
 
-  const renderPet = ({ item }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => navigation.navigate('Detail', { pet: item })}
-    >
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.cardText}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.tag}>{item.species} • {item.age} yrs • {item.breed}</Text>
-        <Text style={styles.shelter}>{item.shelter}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const availableCount = pets.length;
+  const dogsCount = pets.filter((pet) => pet.species === 'Dog').length;
+
+  const getMeta = (item) => {
+    const gender = Number(item.id) % 2 === 0 ? 'Female' : 'Male';
+    return `${item.breed} • ${item.age} years • ${gender}`;
+  };
+
+  const getChips = (item) => {
+    const chipSet = ['Vaccinated', 'Friendly', 'Trained'];
+    const index = Number(item.id) % chipSet.length;
+    return [chipSet[index], chipSet[(index + 1) % chipSet.length], chipSet[(index + 2) % chipSet.length]];
+  };
+
+  const renderPet = ({ item }) => {
+    const chips = getChips(item);
+
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate('Detail', { pet: item })}
+        activeOpacity={0.9}
+      >
+        <Image source={{ uri: item.image }} style={styles.image} />
+
+        <View style={styles.cardText}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.meta}>{getMeta(item)}</Text>
+
+          <View style={styles.chipRow}>
+            {chips.map((chip, index) => (
+              <View
+                key={`${item.id}-${chip}`}
+                style={[
+                  styles.chip,
+                  { backgroundColor: chipPalette[index % chipPalette.length] },
+                ]}
+              >
+                <Text style={styles.chipText}>{chip}</Text>
+              </View>
+            ))}
+          </View>
+
+          <Text style={styles.location}>{item.shelter}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.topRow}>
-        <View>
-          <Text style={styles.header}>PetRescue Match</Text>
-          <Text style={styles.subheader}>Overlooked pets, ready for a home</Text>
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+      <View style={styles.headerWrap}>
+        <Text style={styles.header}>PetRescue Match</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.settingsButton}>
           <Text style={styles.settingsIcon}>⚙️</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Filter buttons — each button updates Hook 1's state */}
+      <Text style={styles.subheader}>Rescue animals ready for adoption near you</Text>
+
+      <View style={styles.statsRow}>
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{availableCount}</Text>
+          <Text style={styles.statLabel}>Available</Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>{dogsCount}</Text>
+          <Text style={styles.statLabel}>Dogs</Text>
+        </View>
+
+        <View style={styles.statCard}>
+          <Text style={styles.statNumber}>0</Text>
+          <Text style={styles.statLabel}>Saved</Text>
+        </View>
+      </View>
+
       <View style={styles.filterRow}>
-        {['All', 'Dog', 'Cat', 'Other'].map((species) => (
+        {filterOptions.map((species) => (
           <TouchableOpacity
             key={species}
+            onPress={() => setSelectedSpecies(species)}
             style={[
               styles.filterButton,
               selectedSpecies === species && styles.filterButtonActive,
             ]}
-            onPress={() => setSelectedSpecies(species)}
           >
             <Text
               style={[
@@ -65,49 +113,164 @@ export default function HomeScreen({ navigation }) {
         ))}
       </View>
 
-      {/* FlatList requirement: renders 10+ items from pets.js */}
       <FlatList
         data={filteredPets}
         keyExtractor={(item) => item.id}
         renderItem={renderPet}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA', paddingTop: 50, paddingHorizontal: 16 },
-  topRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  settingsIcon: { fontSize: 24, marginTop: 4 },
-  header: { fontSize: 26, fontWeight: '700', color: '#2D2A26' },
-  subheader: { fontSize: 14, color: '#7A756E', marginBottom: 16 },
-  filterRow: { flexDirection: 'row', marginBottom: 16 },
-  filterButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#D8D3CB',
-    marginRight: 8,
+  container: {
+    flex: 1,
+    backgroundColor: '#F2EEE7',
+    paddingTop: 50,
+    paddingHorizontal: 18,
   },
-  filterButtonActive: { backgroundColor: '#B8654B', borderColor: '#B8654B' },
-  filterText: { color: '#7A756E', fontSize: 13, fontWeight: '600' },
-  filterTextActive: { color: '#FFFFFF' },
+  headerWrap: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  header: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#2A2A2A',
+    letterSpacing: -0.5,
+  },
+  settingsButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#E8E0D8',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsIcon: {
+    fontSize: 22,
+  },
+  subheader: {
+    fontSize: 16,
+    color: '#5D524E',
+    marginBottom: 18,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 18,
+  },
+  statCard: {
+    flex: 1,
+    backgroundColor: '#F8F5F1',
+    borderRadius: 18,
+    paddingVertical: 18,
+    paddingHorizontal: 10,
+    marginHorizontal: 4,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  statNumber: {
+    fontSize: 30,
+    fontWeight: '800',
+    color: '#D97A4A',
+    marginBottom: 2,
+  },
+  statLabel: {
+    fontSize: 15,
+    color: '#49433F',
+    fontWeight: '600',
+  },
+  filterRow: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  filterButton: {
+    flex: 1,
+    paddingVertical: 11,
+    alignItems: 'center',
+    borderRadius: 18,
+    marginRight: 10,
+    backgroundColor: '#F5F1ED',
+    borderWidth: 1,
+    borderColor: '#E2DAD0',
+  },
+  filterButtonActive: {
+    backgroundColor: '#D77A4A',
+    borderColor: '#D77A4A',
+  },
+  filterText: {
+    color: '#5E534D',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  filterTextActive: {
+    color: '#FFF',
+  },
+  listContent: {
+    paddingBottom: 24,
+  },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    marginBottom: 12,
+    backgroundColor: '#F8F5F1',
+    borderRadius: 22,
+    marginBottom: 18,
     overflow: 'hidden',
-    elevation: 2,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  image: { width: 90, height: 90 },
-  cardText: { flex: 1, padding: 10, justifyContent: 'center' },
-  name: { fontSize: 16, fontWeight: '700', color: '#2D2A26' },
-  tag: { fontSize: 12, color: '#7A756E', marginTop: 2 },
-  shelter: { fontSize: 12, color: '#B8654B', marginTop: 4, fontWeight: '600' },
+  image: {
+    width: 150,
+    height: 150,
+    borderRadius: 20,
+    margin: 12,
+  },
+  cardText: {
+    flex: 1,
+    paddingVertical: 18,
+    paddingRight: 16,
+    justifyContent: 'center',
+  },
+  name: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#2A2A2A',
+    marginBottom: 4,
+  },
+  meta: {
+    fontSize: 16,
+    color: '#5C514D',
+    marginBottom: 10,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 8,
+  },
+  chip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  chipText: {
+    color: '#2E6B52',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  location: {
+    fontSize: 15,
+    color: '#4C4845',
+    marginTop: 2,
+  },
 });
