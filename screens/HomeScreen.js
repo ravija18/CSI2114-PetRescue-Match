@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import pets from '../data/pets';
+import { ThemeContext } from '../theme';
 
 const filterOptions = ['All', 'Dog', 'Cat', 'Other'];
-
 const chipPalette = ['#D9F1E5', '#E6F0FF', '#EDE1FF'];
 
 export default function HomeScreen({ navigation }) {
+  const { isDarkMode } = useContext(ThemeContext);
   const [selectedSpecies, setSelectedSpecies] = useState('All');
+
+  const colors = isDarkMode
+    ? {
+        page: '#171717',
+        card: '#252525',
+        textPrimary: '#F2F2F2',
+        textSecondary: '#CACACA',
+        controlBg: '#2D2D2D',
+        controlBorder: '#3A3A3A',
+      }
+    : {
+        page: '#F2EEE7',
+        card: '#F8F5F1',
+        textPrimary: '#2A2A2A',
+        textSecondary: '#5D524E',
+        controlBg: '#F5F1ED',
+        controlBorder: '#E2DAD0',
+      };
 
   const filteredPets =
     selectedSpecies === 'All'
@@ -33,15 +52,15 @@ export default function HomeScreen({ navigation }) {
 
     return (
       <TouchableOpacity
-        style={styles.card}
+        style={[styles.card, { backgroundColor: colors.card }]}
         onPress={() => navigation.navigate('Detail', { pet: item })}
         activeOpacity={0.9}
       >
         <Image source={{ uri: item.image }} style={styles.image} />
 
         <View style={styles.cardText}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.meta}>{getMeta(item)}</Text>
+          <Text style={[styles.name, { color: colors.textPrimary }]}>{item.name}</Text>
+          <Text style={[styles.meta, { color: colors.textSecondary }]}>{getMeta(item)}</Text>
 
           <View style={styles.chipRow}>
             {chips.map((chip, index) => (
@@ -57,37 +76,40 @@ export default function HomeScreen({ navigation }) {
             ))}
           </View>
 
-          <Text style={styles.location}>{item.shelter}</Text>
+          <Text style={[styles.location, { color: colors.textSecondary }]}>{item.shelter}</Text>
         </View>
       </TouchableOpacity>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.page }]}>
       <View style={styles.headerWrap}>
-        <Text style={styles.header}>PetRescue Match</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.settingsButton}>
+        <Text style={[styles.header, { color: colors.textPrimary }]}>PetRescue Match</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Settings')}
+          style={[styles.settingsButton, { backgroundColor: colors.controlBg }]}
+        >
           <Text style={styles.settingsIcon}>⚙️</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.subheader}>Rescue animals ready for adoption near you</Text>
+      <Text style={[styles.subheader, { color: colors.textSecondary }]}>Rescue animals ready for adoption near you</Text>
 
       <View style={styles.statsRow}>
-        <View style={styles.statCard}>
+        <View style={[styles.statCard, { backgroundColor: colors.card }]}>
           <Text style={styles.statNumber}>{availableCount}</Text>
-          <Text style={styles.statLabel}>Available</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Available</Text>
         </View>
 
-        <View style={styles.statCard}>
+        <View style={[styles.statCard, { backgroundColor: colors.card }]}>
           <Text style={styles.statNumber}>{dogsCount}</Text>
-          <Text style={styles.statLabel}>Dogs</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Dogs</Text>
         </View>
 
-        <View style={styles.statCard}>
+        <View style={[styles.statCard, { backgroundColor: colors.card }]}>
           <Text style={styles.statNumber}>0</Text>
-          <Text style={styles.statLabel}>Saved</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Saved</Text>
         </View>
       </View>
 
@@ -98,12 +120,17 @@ export default function HomeScreen({ navigation }) {
             onPress={() => setSelectedSpecies(species)}
             style={[
               styles.filterButton,
+              {
+                backgroundColor: colors.controlBg,
+                borderColor: colors.controlBorder,
+              },
               selectedSpecies === species && styles.filterButtonActive,
             ]}
           >
             <Text
               style={[
                 styles.filterText,
+                { color: colors.textSecondary },
                 selectedSpecies === species && styles.filterTextActive,
               ]}
             >
@@ -127,7 +154,6 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2EEE7',
     paddingTop: 50,
     paddingHorizontal: 18,
   },
@@ -140,14 +166,12 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#2A2A2A',
     letterSpacing: -0.5,
   },
   settingsButton: {
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: '#E8E0D8',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -156,7 +180,6 @@ const styles = StyleSheet.create({
   },
   subheader: {
     fontSize: 16,
-    color: '#5D524E',
     marginBottom: 18,
   },
   statsRow: {
@@ -166,7 +189,6 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#F8F5F1',
     borderRadius: 18,
     paddingVertical: 18,
     paddingHorizontal: 10,
@@ -185,7 +207,6 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 15,
-    color: '#49433F',
     fontWeight: '600',
   },
   filterRow: {
@@ -198,16 +219,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 18,
     marginRight: 10,
-    backgroundColor: '#F5F1ED',
     borderWidth: 1,
-    borderColor: '#E2DAD0',
   },
   filterButtonActive: {
     backgroundColor: '#D77A4A',
     borderColor: '#D77A4A',
   },
   filterText: {
-    color: '#5E534D',
     fontSize: 15,
     fontWeight: '700',
   },
@@ -219,7 +237,6 @@ const styles = StyleSheet.create({
   },
   card: {
     flexDirection: 'row',
-    backgroundColor: '#F8F5F1',
     borderRadius: 22,
     marginBottom: 18,
     overflow: 'hidden',
@@ -243,12 +260,10 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#2A2A2A',
     marginBottom: 4,
   },
   meta: {
     fontSize: 16,
-    color: '#5C514D',
     marginBottom: 10,
   },
   chipRow: {
@@ -270,7 +285,6 @@ const styles = StyleSheet.create({
   },
   location: {
     fontSize: 15,
-    color: '#4C4845',
     marginTop: 2,
   },
 });

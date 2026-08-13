@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { View, Image, Text, StyleSheet } from 'react-native';
+import { ThemeContext } from '../theme';
 
 export default function LandingScreen({ navigation }) {
+  const { isDarkMode } = useContext(ThemeContext);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Home');
@@ -11,7 +14,7 @@ export default function LandingScreen({ navigation }) {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: isDarkMode ? '#171717' : '#C97A5D' }]}>
       <Image
         source={require('../assets/splash-icon.png')}
         style={styles.logo}
