@@ -37,7 +37,7 @@ const pets = [
     healthNotes: 'Fully vaccinated, healthy',
     shelter: 'Animal SOS Sri Lanka',
     shelterContact: '011-456-7890',
-    image: 'https://images.unsplash.com/photo-1517849845537-4d257902861a?w=400',
+    image: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?w=400',
   },
   {
     id: '4',
@@ -61,7 +61,7 @@ const pets = [
     healthNotes: 'Deaf in one ear, trained with hand signals',
     shelter: 'Animal SOS Sri Lanka',
     shelterContact: '011-456-7890',
-    image: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=400',
+    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400',
   },
   {
     id: '6',
@@ -109,7 +109,7 @@ const pets = [
     healthNotes: 'Blind, navigates by sound and smell',
     shelter: 'Animal SOS Sri Lanka',
     shelterContact: '011-456-7890',
-    image: 'https://images.unsplash.com/photo-1517849845537-4d257902861a?w=400',
+    image: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=400&q=80',
   },
   {
     id: '10',
