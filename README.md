@@ -37,17 +37,17 @@ PetRescue Match is a React Native Expo app that helps users browse adoptable pet
 
 ## Screenshots
 
+### Landing Screen
+![Landing Screen](screenshots/splash.jpeg)
+
 ### Home Screen
-![Home Screen](screenshots/home.png)
+![Home Screen](screenshots/home.jpeg)
 
 ### Pet Detail Screen
-![Detail Screen](screenshots/detail.png)
+![Detail Screen](screenshots/detail.jpeg)
 
 ### Settings Screen
-![Settings Screen](screenshots/settings.png)
-
-### Landing Screen
-![Landing Screen](screenshots/landing.png)
+![Settings Screen](screenshots/setting.jpeg)
 
 ## Assessment Alignment
 This app satisfies the Sprint 1 prototype requirements:
