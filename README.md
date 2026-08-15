@@ -36,18 +36,16 @@ PetRescue Match is a React Native Expo app that helps users browse adoptable pet
 3. Scan the QR code with Expo Go on Android, or run in an emulator.
 
 ## Screenshots
-
-### Landing Screen
-![Landing Screen](screenshots/splash.jpeg)
-
-### Home Screen
-![Home Screen](screenshots/home.jpeg)
-
-### Pet Detail Screen
-![Detail Screen](screenshots/detail.jpeg)
-
-### Settings Screen
-![Settings Screen](screenshots/setting.jpeg)
+<table>
+  <tr>
+    <td align="center"><b>Landing Screen</b><br/><img src="screenshots/splash.jpeg" width="220"/></td>
+    <td align="center"><b>Home Screen</b><br/><img src="screenshots/home.jpeg" width="220"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Pet Detail Screen</b><br/><img src="screenshots/detail.jpeg" width="220"/></td>
+    <td align="center"><b>Settings Screen</b><br/><img src="screenshots/setting.jpeg" width="220"/></td>
+  </tr>
+</table>
 
 ## Assessment Alignment
 This app satisfies the Sprint 1 prototype requirements:
